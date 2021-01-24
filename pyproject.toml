@@ -1,0 +1,45 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "wellmap_qpcr"
+author = "Kale Kundert"
+author-email = "kale@thekunderts.net"
+home-page = 'https://github.com/kalekundert/wellmap_qpcr'
+description-file = 'README.rst'
+requires-python = "~=3.6"
+requires = [
+]
+classifiers = [
+  'Programming Language :: Python :: 3',
+  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+]
+
+[tool.flit.metadata.requires-extra]
+test = [
+  'pytest',
+  'pytest-cov',
+  'coveralls',
+]
+doc = [
+  'sphinx',
+  'sphinx_rtd_theme',
+  'autoclasstoc',
+]
+[tool.flit.scripts]
+wellmap_qpcr = "wellmap_qpcr:main"
+[tool.flit.metadata.urls]
+'Documentation' = 'https://wellmap_qpcr.readthedocs.io/en/latest/'
+'Version Control' = 'https://github.com/kalekundert/wellmap_qpcr'
+'Bug Tracker' = 'https://github.com/kalekundert/wellmap_qpcr/issues'
+'Continuous Integration' = 'https://github.com/kalekundert/wellmap_qpcr/actions'
+'Test Coverage' = 'https://coveralls.io/github/kalekundert/wellmap_qpcr'
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --doctest-glob='*.rst'"
+doctest_optionflags = 'NORMALIZE_WHITESPACE'
+
+[tool.semantic_release]
+version_variable = 'wellmap_qpcr/__init__.py:__version__'
+build_command = 'python -m pip install flit && flit build'
