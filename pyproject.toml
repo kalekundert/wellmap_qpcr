@@ -27,8 +27,11 @@ doc = [
   'sphinx_rtd_theme',
   'autoclasstoc',
 ]
+
 [tool.flit.scripts]
-wellmap_qpcr = "wellmap_qpcr:main"
+qpcr-optimize-ta = "wellmap_qpcr.scripts.optimize_ta:main"
+qpcr-check-efficiency = "wellmap_qpcr.scripts.check_efficiency:main"
+
 [tool.flit.metadata.urls]
 'Documentation' = 'https://wellmap_qpcr.readthedocs.io/en/latest/'
 'Version Control' = 'https://github.com/kalekundert/wellmap_qpcr'

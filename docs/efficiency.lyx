@@ -1,0 +1,214 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding utf8-plain
+\fontencoding default
+\font_roman "default" "Liberation Serif"
+\font_sans "default" "Liberation Sans"
+\font_typewriter "default" "Liberation Mono"
+\font_math "auto" "default"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref section
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 0
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine biblatex
+\cite_engine_type numerical
+\biblatex_bibstyle numeric
+\biblatex_citestyle numeric
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+How to calculate qPCR efficiency
+\end_layout
+
+\begin_layout Standard
+Begin with the assumption that each qPCR trace is an exponential curve,
+ where 
+\begin_inset Formula $C_{0}$
+\end_inset
+
+ is the initial concentration, 
+\begin_inset Formula $n$
+\end_inset
+
+ is the cycle number, and 
+\begin_inset Formula $C$
+\end_inset
+
+ is the concentration at a given cycle number: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C=C_{0}2^{n}
+\]
+
+\end_inset
+
+Here we are assuming that the concentration doubles in every cycle, but
+ this is the ideal scenario.
+ In reality, our goal is to calculate how close the concentration comes
+ to doubling each cycle.
+ So let's begin by replacing the 2 with the variable 
+\begin_inset Formula $x$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C=C_{0}x^{n}
+\]
+
+\end_inset
+
+If we consider two traces from the same standard curve, they will have different
+ starting concentrations and different cycles at which they reach 
+\begin_inset Formula $C_{q}$
+\end_inset
+
+.
+ This is expressed as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C_{q}=C_{1}x^{n_{1}}=C_{2}x^{n_{2}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{C_{1}}{C_{2}}=\frac{x^{n_{2}}}{x^{n_{1}}}=x^{n_{2}-n_{1}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+x=\left(\frac{C_{1}}{C_{2}}\right)^{\frac{1}{n_{2}-n_{1}}}=\left(\frac{C_{2}}{C_{1}}\right)^{\frac{-1}{n_{2}-n_{1}}}
+\]
+
+\end_inset
+
+This is the equation for efficiency, but in terms of only two data points.
+ In order to be able to calculate efficiency for standard curves with any
+ number of data points, we'd like to express this equation in terms of a
+ slope instead:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+m=\frac{n_{2}-n_{1}}{\log C_{2}-\log C_{1}}=\frac{n_{2}-n_{1}}{\log\frac{C_{2}}{C_{1}}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{C_{2}}{C_{1}}=10^{\frac{n_{2}-n_{1}}{m}}
+\]
+
+\end_inset
+
+We can plug this expression back into our equation for efficiency:
+\begin_inset Formula 
+\[
+x=10^{-1/m}
+\]
+
+\end_inset
+
+Note that x is the number of doublings per cycle, so the final step is to
+ calculate the efficiency as a percentage of the ideal:
+\begin_inset Formula 
+\[
+e=100\%\times\left[1+\left(10^{-1/m}-2\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
