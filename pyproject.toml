@@ -1,22 +1,31 @@
 [build-system]
-requires = ["flit"]
-build-backend = "flit.buildapi"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata]
-module = "wellmap_qpcr"
-author = "Kale Kundert"
-author-email = "kale@thekunderts.net"
-home-page = 'https://github.com/kalekundert/wellmap_qpcr'
-description-file = 'README.rst'
+[project]
+name = "wellmap_qpcr"
+authors = [
+  {name = "Kale Kundert", email = "kale@thekunderts.net"},
+]
+readme = "README.rst"
+dynamic = ["version", "description"]
 requires-python = "~=3.6"
-requires = [
+dependencies = [
+  'wellmap',
+  'numpy',
+  'scipy',
+  'pandas',
+  'matplotlib',
+  'more_itertools',
+  'color_me',
+  'byoc',
+  'docopt',
 ]
 classifiers = [
-  'Programming Language :: Python :: 3',
-  'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+  'Programming Language :: Python :: 3.6',
 ]
 
-[tool.flit.metadata.requires-extra]
+[project.optional-dependencies]
 test = [
   'pytest',
   'pytest-cov',
@@ -28,11 +37,13 @@ doc = [
   'autoclasstoc',
 ]
 
-[tool.flit.scripts]
-qpcr-optimize-ta = "wellmap_qpcr.scripts.optimize_ta:main"
-qpcr-check-efficiency = "wellmap_qpcr.scripts.check_efficiency:main"
+[project.scripts]
+qpcr-relative-expression = "wellmap_qpcr.analysis.relative_expression:main"
+qpcr-check-efficiency = "wellmap_qpcr.analysis.check_efficiency:CheckEfficiency.entry_point"
+qpcr-optimize-ta = "wellmap_qpcr.analysis.optimize_ta:OptimizeTa.entry_point"
+qpcr-cq-heatmap = "wellmap_qpcr.analysis.cq_heatmap:CqHeatmap.entry_point"
 
-[tool.flit.metadata.urls]
+[project.urls]
 'Documentation' = 'https://wellmap_qpcr.readthedocs.io/en/latest/'
 'Version Control' = 'https://github.com/kalekundert/wellmap_qpcr'
 'Bug Tracker' = 'https://github.com/kalekundert/wellmap_qpcr/issues'
@@ -44,5 +55,7 @@ addopts = "--doctest-modules --doctest-glob='*.rst'"
 doctest_optionflags = 'NORMALIZE_WHITESPACE'
 
 [tool.semantic_release]
+branch = 'release'
 version_variable = 'wellmap_qpcr/__init__.py:__version__'
 build_command = 'python -m pip install flit && flit build'
+major_on_zero = false

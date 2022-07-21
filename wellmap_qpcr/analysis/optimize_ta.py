@@ -91,6 +91,3 @@ Options:
         fig.tight_layout()
 
         return fig
-
-def main():
-    return OptimizeTa.main()

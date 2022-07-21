@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 
 import os, sys
-import appcli
+import byoc
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-class App(appcli.App):
+class App(byoc.App):
     __config__ = [
-            appcli.DocoptConfig(),
+            byoc.DocoptConfig,
     ]
-    layout_toml = appcli.param('<toml>', cast=Path)
-    output = appcli.param('--output', default=None)
+    layout_toml = byoc.param('<toml>', cast=Path)
+    output = byoc.param('--output', default=None)
 
-    @classmethod
-    def main(cls):
-        self = cls.from_params()
-        appcli.load(self)
+    def main(self):
+        byoc.load(self)
 
         if not self.output:
             if os.fork() != 0:
                 sys.exit()
 
-        df, extras = self.load()
-        fig = self.plot(df, extras)
+        # df, extras = self.load()
+        # fig = self.plot(df, extras)
+
+        fig = self.plot(plt.subplots)
+        assert fig
 
         if self.output:
             out = self.output.replace('$', self.layout_toml.stem)

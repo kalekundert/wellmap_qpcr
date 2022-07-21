@@ -25,3 +25,11 @@ Wellmap: qPCR
 .. image:: https://img.shields.io/github/last-commit/kalekundert/wellmap_qpcr?logo=github
    :alt: GitHub last commit
    :target: https://github.com/kalekundert/wellmap_qpcr
+
+Usage
+=====
+- Use the provided scripts for routine analysis, e.g. checking primer 
+  efficiency, looking and traces, etc.
+
+- Import the ``load_*()`` functions for doing your own analysis on certain 
+  kinds of data.
