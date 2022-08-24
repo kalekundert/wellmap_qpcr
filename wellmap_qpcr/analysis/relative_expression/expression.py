@@ -19,22 +19,6 @@ Subcommands:
     (specified by the <toml> argument) to contain the same information.
     
 Arguments:
-    <analysis>
-        Which analysis to perform.  By default, a bar chart comparing the 
-        relative expression of all the genes specified in the <toml> layout 
-        will be prepared.  Otherwise, the following analyses can be requested:
-
-        amplification:
-            Display raw amplification curves for each experimental condition.  
-            This can reveal information that would be abstracted away in the 
-            bar plot, e.g. whether certain conditions have abnormally high/low 
-            Cq values.
-
-        melt:
-            Display melt curves for each experimental condition.  This is a 
-            simply (although not fool-proof) way to confirm that the PCR 
-            reactions worked cleanly.
-        
     <toml>
         A wellmap file describing the experimental layout.  See the 'Layout' 
         section below for more information on the expected contents of this 
@@ -91,10 +75,11 @@ Layout:
             expression for each label, e.g. for the "amplification" and "melt" 
             subcommands.
 
-        gene:
-            A boolean indicating whether this is the gene of interest (True) or 
-            a control gene (False).  This information can also be specified via 
-            the `qpcr.gene.*` metadata options.
+        housekeeping:
+            A boolean indicating whether this is the housekeeping gene (True) 
+            or the experimentally interesting gene (False).  This information 
+            can also be specified via the `qpcr.housekeeping.*` metadata 
+            options.
 
         treatment:
             A boolean indicating whether this is the experimental (True) or 
@@ -103,14 +88,14 @@ Layout:
 
     The following metadata can also be provided:
 
-        qpcr.gene.expt
-        qpcr.gene.ref
+        qpcr.housekeeping.true
+        qpcr.housekeeping.false
             Pandas query strings that can be used to find the wells 
-            corresponding to the experimental and reference genes, 
+            corresponding to the housekeeping and experimental genes, 
             respectively.
 
-        qpcr.treatment.expt
-        qpcr.treatment.ref
+        qpcr.treatment.true
+        qpcr.treatment.false
             Pandas query strings that can be used to find the wells 
             corresponding to the experimental and reference treatments, 
             respectively.
@@ -141,6 +126,7 @@ Layout:
 import wellmap
 import sys, docopt
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from .calc import agg_cq, calc_Δcq, calc_ΔΔcq
 from .layout import add_labels, add_ΔΔcq_flags, init_style
@@ -148,6 +134,9 @@ from wellmap_qpcr.load import load_cq
 from wellmap_qpcr.utils import plot_or_save, resolve_img_path
 from color_me import ucsf
 from pathlib import Path
+
+pd.options.display.width = sys.maxsize
+pd.options.display.max_rows = sys.maxsize
 
 def main():
     # It's a bit gross to be accessing `sys.argv` directly, but there's no 
@@ -193,14 +182,20 @@ def load(layout_path, verbose=False):
     add_labels(df, extra)
     add_ΔΔcq_flags(df, extra)
 
+    def cols(*cols):
+        cols = list(cols)
+        if 'treatment' not in df:
+            cols.remove('treatment')
+        return cols
+
     if verbose:
-        print(df[['well','gene','treatment','label','cq']])
+        print(df[cols('well', 'housekeeping', 'treatment', 'label', 'cq')])
         print()
 
     layout = df
 
     df = df\
-            .groupby(['gene', 'treatment', 'label'])\
+            .groupby(cols('housekeeping', 'treatment', 'label'))\
             .apply(agg_cq)
 
     if verbose:
@@ -208,21 +203,25 @@ def load(layout_path, verbose=False):
         print()
 
     df = calc_Δcq(
-            df_expt=df.loc[1],
-            df_ref=df.loc[0],
+            df_expt=df.loc[0],
+            df_ref=df.loc[1],
     )
 
     if verbose:
         print(df)
         print()
 
-    df = calc_ΔΔcq(
-            df_expt=df.loc[1],
-            df_ref=df.loc[0],
-    )
+    # If the user didn't specify experimental/control treatment conditions, 
+    # stop here and just report ΔCq instead of ΔΔCq.
 
-    if verbose:
-        print(df)
+    if 'treatment' in df.index.names:
+        df = calc_ΔΔcq(
+                df_expt=df.loc[1],
+                df_ref=df.loc[0],
+        )
+
+        if verbose:
+            print(df)
 
     return df, layout, init_style(extra)
 

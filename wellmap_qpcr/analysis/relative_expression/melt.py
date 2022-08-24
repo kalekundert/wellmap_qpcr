@@ -3,6 +3,9 @@
 """\
 Plot melt curves for each experimental condition.
 
+This is a simple (although not fool-proof) way to confirm that the PCR 
+reactions amplified only a single, homogeneous product.
+
 Usage:
     qpcr-relative-expression melt <toml> [-o <path> | -O]
 
@@ -99,12 +102,15 @@ def plot_melt_curves(ax, label, df, style):
     ax.set_title(label)
 
     labels = {}
-    cols = ['well', 'sublabel', 'gene', 'treatment']
+    cols = ['well', 'sublabel', 'housekeeping', 'treatment']
 
-    for (well, sublabel, gene, treatment), g in df.groupby(cols):
+    if 'treatment' not in df:
+        df['treatment'] = True
+
+    for (well, sublabel, housekeeping, treatment), g in df.groupby(cols):
         color = style.color.get(sublabel, ucsf.blue[0]) \
                 if treatment else ucsf.dark_grey[0]
-        linestyle = '-' if gene else '--'
+        linestyle = '-' if housekeeping else '--'
 
         artists = ax.plot(
                 g['temp_C'], g['rfu_deriv'],

@@ -28,7 +28,7 @@ class Style(BaseModel):
         if not self.order:
             self.order = infer_order_from_layout(df)
 
-        if all(isinstance(x, int) for x in self.order):
+        if all(isinstance(x, int) for x in self.order.values()):
             self.shape, self.indices = infer_shape_from_order(self.order)
         else:
             self.shape, self.indices = infer_shape_from_order_tuples(self.order)
@@ -51,16 +51,17 @@ def add_labels(df, extra):
         df[col] = df.apply(format_cell, args=(col,), axis=1)
 
 def add_ΔΔcq_flags(df, extra):
-    for col in ['gene', 'treatment']:
+    for col in ['housekeeping', 'treatment']:
         if col in df.columns:
             continue
 
-        i = df.eval(extra['qpcr'][col]['expt'])
-        j = df.eval(extra['qpcr'][col]['ref'])
+        if col in extra.get('qpcr', {}):
+            i = df.eval(extra['qpcr'][col]['true'])
+            j = df.eval(extra['qpcr'][col]['false'])
 
-        df[col] = np.nan
-        df.loc[i,col] = True
-        df.loc[j,col] = False
+            df[col] = np.nan
+            df.loc[i,col] = True
+            df.loc[j,col] = False
 
 def init_style(extra):
     return Style.parse_obj(extra.get('qpcr', {}))
@@ -76,11 +77,11 @@ def infer_order_from_layout(df):
     return order
 
 def infer_shape_from_order(order):
-    values = sorted(unique(order))
-    shape = 0, len(values)
+    values = sorted(unique(order.values()))
+    shape = 1, len(values)
 
     index_map = {k: v for v, k in enumerate(values)}
-    indices = {k: index_map[v] for k, v in order.items()}
+    indices = {k: (0, index_map[v]) for k, v in order.items()}
 
     return shape, indices
 

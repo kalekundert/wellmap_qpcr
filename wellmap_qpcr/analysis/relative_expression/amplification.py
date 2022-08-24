@@ -3,6 +3,10 @@
 """\
 Plot raw amplification curves for each experimental condition.
 
+This can reveal information that would be abstracted away in the relative 
+expression bar plot, e.g. whether the amplification was clean, whether certain 
+conditions have abnormally high/low Cq values, etc.
+
 Usage:
     qpcr-relative-expression (amp|amplification) <toml> [-o <path> | -O] [-l]
 
@@ -122,18 +126,21 @@ def plot_trace_groups(df_cq, df_trace, style, log_rfu=False):
     fig.tight_layout()
 
 def plot_trace_group(ax, label, df_cq, df_trace, style):
-    cols = ['well', 'sublabel', 'gene', 'treatment']
+    ax.set_title(label)
+
+    cols = ['well', 'sublabel', 'housekeeping', 'treatment']
     df_cq = df_cq.set_index('well')
 
-    ax.set_title(label)
+    if 'treatment' not in df_trace:
+        df_trace['treatment'] = True
 
     labels = {}
 
-    for (well, sublabel, gene, treatment), g in df_trace.groupby(cols):
+    for (well, sublabel, housekeeping, treatment), g in df_trace.groupby(cols):
         color = style.color.get(sublabel, ucsf.blue[0]) \
                 if treatment else ucsf.dark_grey[0]
-        linestyle = '-' if gene else '--'
-        marker = 'o' if gene else '+'
+        linestyle = '--' if housekeeping else '-'
+        marker = '+' if housekeeping else 'o'
 
         artists = ax.plot(
                 g['cycle'], g['rfu'],
