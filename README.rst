@@ -14,7 +14,7 @@ Wellmap: qPCR
    :alt: Documentation
    :target: https://wellmap_qpcr.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://img.shields.io/github/workflow/status/kalekundert/wellmap_qpcr/Test%20and%20release/master
+.. image:: https://img.shields.io/github/actions/workflow/status/kalekundert/wellmap_qpcr/test_and_release.yml?branch=master
    :alt: Test status
    :target: https://github.com/kalekundert/wellmap_qpcr/actions
 
